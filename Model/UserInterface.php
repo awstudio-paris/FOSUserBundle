@@ -9,14 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\UserBundle\Model;
+namespace Innocence\CmsBundle\Model;
+
 
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
-/**
- * @author Thibault Duplessis <thibault.duplessis@gmail.com>
- * @author Johannes M. Schmitt <schmittjoh@gmail.com>
- */
 interface UserInterface extends AdvancedUserInterface, \Serializable
 {
     const ROLE_DEFAULT = 'ROLE_USER';
@@ -74,7 +71,8 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setEmail($email);
+    public function setEmail(?string $email);
+
 
     /**
      * Gets the canonical email in search and sort queries.
@@ -90,7 +88,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setEmailCanonical($emailCanonical);
+    public function setEmailCanonical(?string $emailCanonical);
 
     /**
      * Gets the plain password.
@@ -226,3 +224,4 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      */
     public function removeRole($role);
 }
+
