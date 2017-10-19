@@ -370,7 +370,7 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function setEmail($email)
+    public function setEmail(?string $email)
     {
         $this->email = $email;
 
@@ -380,7 +380,7 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function setEmailCanonical($emailCanonical)
+    public function setEmailCanonical(?string $emailCanonical)
     {
         $this->emailCanonical = $emailCanonical;
 
