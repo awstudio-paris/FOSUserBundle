@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Innocence\CmsBundle\Model;
+namespace FOS\UserBundle\Model;
 
 
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
