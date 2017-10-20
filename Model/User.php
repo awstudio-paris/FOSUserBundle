@@ -112,18 +112,18 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function addRole($role)
+    public function addRole(string $role) :void
     {
         $role = strtoupper($role);
         if ($role === static::ROLE_DEFAULT) {
-            return $this;
+            return;
         }
 
         if (!in_array($role, $this->roles, true)) {
             $this->roles[] = $role;
         }
 
-        return $this;
+        return;
     }
 
     /**
@@ -169,7 +169,7 @@ abstract class User implements UserInterface, GroupableInterface
             $this->id,
             $this->email,
             $this->emailCanonical
-        ) = $data;
+            ) = $data;
     }
 
     /**
@@ -199,7 +199,7 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function getUsernameCanonical()
+    public function getUsernameCanonical(): ?string
     {
         return $this->usernameCanonical;
     }
@@ -239,7 +239,7 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function getPlainPassword()
+    public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
@@ -249,7 +249,7 @@ abstract class User implements UserInterface, GroupableInterface
      *
      * @return \DateTime
      */
-    public function getLastLogin()
+    public function getLastLogin(): ?\DateTimeInterface
     {
         return $this->lastLogin;
     }
@@ -282,7 +282,7 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function hasRole($role)
+    public function hasRole(string $role): bool
     {
         return in_array(strtoupper($role), $this->getRoles(), true);
     }
@@ -327,34 +327,29 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function removeRole($role)
+    public function removeRole(string $role): void
     {
         if (false !== $key = array_search(strtoupper($role), $this->roles, true)) {
             unset($this->roles[$key]);
             $this->roles = array_values($this->roles);
         }
 
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setUsername($username)
+    public function setUsername(?string $username): void
     {
         $this->username = $username;
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setUsernameCanonical($usernameCanonical)
+    public function setUsernameCanonical(?string $usernameCanonical): void
     {
         $this->usernameCanonical = $usernameCanonical;
-
-        return $this;
     }
 
     /**
@@ -390,21 +385,18 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function setEnabled($boolean)
+    public function setEnabled(?bool $boolean): void
     {
         $this->enabled = (bool) $boolean;
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setPassword($password)
+    public function setPassword(?string $password): void
     {
         $this->password = $password;
 
-        return $this;
     }
 
     /**
@@ -424,21 +416,18 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function setPlainPassword($password)
+    public function setPlainPassword(?string $password): void
     {
         $this->plainPassword = $password;
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setLastLogin(\DateTime $time = null)
+    public function setLastLogin(?\DateTimeInterface $time = null):void
     {
         $this->lastLogin = $time;
 
-        return $this;
     }
 
     /**
@@ -454,11 +443,9 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function setPasswordRequestedAt(\DateTime $date = null)
+    public function setPasswordRequestedAt(\DateTimeInterface $date = null):void
     {
         $this->passwordRequestedAt = $date;
-
-        return $this;
     }
 
     /**
@@ -466,7 +453,7 @@ abstract class User implements UserInterface, GroupableInterface
      *
      * @return null|\DateTime
      */
-    public function getPasswordRequestedAt()
+    public function getPasswordRequestedAt(): ?\DateTimeInterface
     {
         return $this->passwordRequestedAt;
     }
@@ -474,10 +461,15 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * {@inheritdoc}
      */
-    public function isPasswordRequestNonExpired($ttl)
+    public function isPasswordRequestNonExpired(\DateInterval $ttl): bool
     {
-        return $this->getPasswordRequestedAt() instanceof \DateTime &&
-               $this->getPasswordRequestedAt()->getTimestamp() + $ttl > time();
+        if (null === $this->passwordRequestedAt) {
+            return false;
+        }
+
+        $threshold = new \DateTime();
+        $threshold->sub($ttl);
+        return $threshold <= $this->passwordRequestedAt;
     }
 
     /**

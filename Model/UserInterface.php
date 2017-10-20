@@ -34,14 +34,14 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setUsername($username);
+    public function setUsername(?string $username): void;
 
     /**
      * Gets the canonical username in search and sort queries.
      *
      * @return string
      */
-    public function getUsernameCanonical();
+    public function getUsernameCanonical(): ?string;
 
     /**
      * Sets the canonical username.
@@ -50,7 +50,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setUsernameCanonical($usernameCanonical);
+    public function setUsernameCanonical(?string $usernameCanonical): void;
 
     /**
      * @param string|null $salt
@@ -104,7 +104,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setPlainPassword($password);
+    public function setPlainPassword(?string $plainPassword): void;
 
     /**
      * Sets the hashed password.
@@ -113,7 +113,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setPassword($password);
+    public function setPassword(?string $password): void;
 
     /**
      * Tells if the the given user has the super admin role.
@@ -127,7 +127,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setEnabled($boolean);
+    public function setEnabled(?bool $enabled): void;
 
     /**
      * Sets the super admin status.
@@ -161,7 +161,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setPasswordRequestedAt(\DateTime $date = null);
+    public function setPasswordRequestedAt(\DateTimeInterface $date = null):void;
 
     /**
      * Checks whether the password reset request has expired.
@@ -170,7 +170,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return int
      */
-    public function isPasswordRequestNonExpired($ttl);
+    public function isPasswordRequestNonExpired(\DateInterval $ttl): bool;
 
     /**
      * Sets the last login time.
@@ -179,7 +179,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function setLastLogin(\DateTime $time = null);
+    public function setLastLogin(?\DateTimeInterface $time): void;
 
     /**
      * Never use this to check if this user has access to anything!
@@ -193,7 +193,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return bool
      */
-    public function hasRole($role);
+    public function hasRole(string $role): bool;
 
     /**
      * Sets the roles of the user.
@@ -213,7 +213,7 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function addRole($role);
+    public function addRole(string $role): void;
 
     /**
      * Removes a role to the user.
@@ -222,6 +222,6 @@ interface UserInterface extends AdvancedUserInterface, \Serializable
      *
      * @return self
      */
-    public function removeRole($role);
+    public function removeRole(string $role): void;
 }
 
