@@ -39,7 +39,7 @@ class ResettingListener implements EventSubscriberInterface
     public function __construct(UrlGeneratorInterface $router, $tokenTtl)
     {
         $this->router = $router;
-        $this->tokenTtl = $tokenTtl;
+        $this->tokenTtl = is_numeric($tokenTtl) ? new \DateInterval('PT'.$tokenTtl.'S') : $tokenTtl;
     }
 
     /**
