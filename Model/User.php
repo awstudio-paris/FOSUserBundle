@@ -11,6 +11,7 @@
 
 namespace FOS\UserBundle\Model;
 
+use AWCmsBundle\Entity\Site;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -99,6 +100,11 @@ abstract class User implements UserInterface, GroupableInterface
      * @var array
      */
     protected $roles;
+
+    /**
+     * @var Site
+     */
+    protected $site;
 
     /**
      * User constructor.
@@ -545,5 +551,21 @@ abstract class User implements UserInterface, GroupableInterface
     public function __toString()
     {
         return (string) $this->getUsername();
+    }
+
+    /**
+     * @return Site|null
+     */
+    public function getSite()
+    {
+        return $this->site;
+    }
+
+    /**
+     * @param Site $site
+     */
+    public function setSite($site)
+    {
+        $this->site = $site;
     }
 }

@@ -6,13 +6,20 @@
 
     <mapped-superclass name="FOS\UserBundle\Model\User">
 
-        <field name="username" column="username" type="string" length="180" />
+        <unique-constraints>
+            <unique-constraint columns="email,site_id" name="unique_email" />
+            <unique-constraint columns="email_canonical,site_id" name="unique_email_canonical" />
+            <unique-constraint columns="username,site_id" name="unique_username" />
+            <unique-constraint columns="username_canonical,site_id" name="unique_username_canonical" />
+        </unique-constraints>
 
-        <field name="usernameCanonical" column="username_canonical" type="string" length="180" unique="true" />
+        <field name="username" column="username" type="string" length="180" nullable="false"/>
 
-        <field name="email" column="email" type="string" length="180" />
+        <field name="usernameCanonical" column="username_canonical" type="string" length="180" nullable="false" />
 
-        <field name="emailCanonical" column="email_canonical" type="string" length="180" unique="true" />
+        <field name="email" column="email" type="string" length="180" nullable="false"/>
+
+        <field name="emailCanonical" column="email_canonical" type="string" length="180" nullable="false" />
 
         <field name="enabled" column="enabled" type="boolean" />
 
@@ -27,6 +34,10 @@
         <field name="passwordRequestedAt" column="password_requested_at" type="datetime" nullable="true" />
 
         <field name="roles" column="roles" type="array" />
+
+        <many-to-one target-entity="AWCmsBundle\Entity\Site" field="site">
+            <join-column name="site_id" referenced-column-name="id" nullable="true"/>
+        </many-to-one>
 
     </mapped-superclass>
 
