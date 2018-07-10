@@ -66,7 +66,7 @@ class ResettingController extends Controller
         }
 
         $ttl = $this->container->getParameter('fos_user.resetting.retry_ttl');
-
+        $ttl = is_numeric($ttl) ? new \DateInterval('PT'.$ttl.'S') : $ttl;
         if (null !== $user && !$user->isPasswordRequestNonExpired($ttl)) {
             $event = new GetResponseUserEvent($user, $request);
             $dispatcher->dispatch(FOSUserEvents::RESETTING_RESET_REQUEST, $event);
@@ -102,7 +102,7 @@ class ResettingController extends Controller
             }
         }
 
-        return new RedirectResponse($this->generateUrl('fos_user_resetting_check_email', array('username' => $username)));
+        return new RedirectResponse($this->generateUrl('fos_user_resetting_check_email', array('email' => $username)));
     }
 
     /**
@@ -114,8 +114,7 @@ class ResettingController extends Controller
      */
     public function checkEmailAction(Request $request)
     {
-        $username = $request->query->get('username');
-
+        $username = $request->query->get('email');
         if (empty($username)) {
             // the user does not come from the sendEmail action
             return new RedirectResponse($this->generateUrl('fos_user_resetting_request'));
