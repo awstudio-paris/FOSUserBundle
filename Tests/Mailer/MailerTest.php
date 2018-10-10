@@ -12,11 +12,11 @@
 namespace FOS\UserBundle\Tests\Mailer;
 
 use FOS\UserBundle\Mailer\Mailer;
-use Swift_Events_EventDispatcher;
+use PHPUnit\Framework\TestCase;
 use Swift_Mailer;
 use Swift_Transport_NullTransport;
 
-class MailerTest extends \PHPUnit_Framework_TestCase
+class MailerTest extends TestCase
 {
     /**
      * @dataProvider goodEmailProvider
@@ -60,12 +60,30 @@ class MailerTest extends \PHPUnit_Framework_TestCase
         $mailer->sendResettingEmailMessage($this->getUser($emailAddress));
     }
 
+    public function goodEmailProvider()
+    {
+        return array(
+            array('foo@example.com'),
+            array('foo@example.co.uk'),
+            array($this->getEmailAddressValueObject('foo@example.com')),
+            array($this->getEmailAddressValueObject('foo@example.co.uk')),
+        );
+    }
+
+    public function badEmailProvider()
+    {
+        return array(
+            array('foo'),
+            array($this->getEmailAddressValueObject('foo')),
+        );
+    }
+
     private function getMailer()
     {
         return new Mailer(
             new Swift_Mailer(
                 new Swift_Transport_NullTransport(
-                    $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock()
+                    $this->getMockBuilder('\Swift_Events_EventDispatcher')->getMock()
                 )
             ),
             $this->getMockBuilder('Symfony\Component\Routing\Generator\UrlGeneratorInterface')->getMock(),
@@ -112,23 +130,5 @@ class MailerTest extends \PHPUnit_Framework_TestCase
         ;
 
         return $emailAddress;
-    }
-
-    public function goodEmailProvider()
-    {
-        return array(
-            array('foo@example.com'),
-            array('foo@example.co.uk'),
-            array($this->getEmailAddressValueObject('foo@example.com')),
-            array($this->getEmailAddressValueObject('foo@example.co.uk')),
-        );
-    }
-
-    public function badEmailProvider()
-    {
-        return array(
-            array('foo'),
-            array($this->getEmailAddressValueObject('foo')),
-        );
     }
 }

@@ -12,10 +12,11 @@
 namespace FOS\UserBundle\Tests\Mailer;
 
 use FOS\UserBundle\Mailer\TwigSwiftMailer;
+use PHPUnit\Framework\TestCase;
 use Swift_Mailer;
 use Swift_Transport_NullTransport;
 
-class TwigSwiftMailerTest extends \PHPUnit_Framework_TestCase
+class TwigSwiftMailerTest extends TestCase
 {
     /**
      * @dataProvider goodEmailProvider
@@ -57,6 +58,24 @@ class TwigSwiftMailerTest extends \PHPUnit_Framework_TestCase
     {
         $mailer = $this->getTwigSwiftMailer();
         $mailer->sendResettingEmailMessage($this->getUser($emailAddress));
+    }
+
+    public function goodEmailProvider()
+    {
+        return array(
+            array('foo@example.com'),
+            array('foo@example.co.uk'),
+            array($this->getEmailAddressValueObject('foo@example.com')),
+            array($this->getEmailAddressValueObject('foo@example.co.uk')),
+        );
+    }
+
+    public function badEmailProvider()
+    {
+        return array(
+            array('foo'),
+            array($this->getEmailAddressValueObject('foo')),
+        );
     }
 
     private function getTwigSwiftMailer()
@@ -114,23 +133,5 @@ TWIG
         ;
 
         return $emailAddress;
-    }
-
-    public function goodEmailProvider()
-    {
-        return array(
-            array('foo@example.com'),
-            array('foo@example.co.uk'),
-            array($this->getEmailAddressValueObject('foo@example.com')),
-            array($this->getEmailAddressValueObject('foo@example.co.uk')),
-        );
-    }
-
-    public function badEmailProvider()
-    {
-        return array(
-            array('foo'),
-            array($this->getEmailAddressValueObject('foo')),
-        );
     }
 }

@@ -14,6 +14,7 @@ namespace FOS\UserBundle\Model;
 use AWCmsBundle\Entity\Site;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 
 /**
  * Storage agnostic user object.
@@ -75,24 +76,24 @@ abstract class User implements UserInterface, GroupableInterface
     protected $plainPassword;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
     protected $lastLogin;
 
     /**
      * Random string sent to the user email address in order to verify it.
      *
-     * @var string
+     * @var string|null
      */
     protected $confirmationToken;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
     protected $passwordRequestedAt;
 
     /**
-     * @var Collection
+     * @var GroupInterface[]|Collection
      */
     protected $groups;
 
@@ -113,6 +114,14 @@ abstract class User implements UserInterface, GroupableInterface
     {
         $this->enabled = false;
         $this->roles = array();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->getUsername();
     }
 
     /**
@@ -253,7 +262,7 @@ abstract class User implements UserInterface, GroupableInterface
     /**
      * Gets the last login time.
      *
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getLastLogin(): ?\DateTimeInterface
     {
@@ -546,11 +555,27 @@ abstract class User implements UserInterface, GroupableInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function __toString()
+    public function isEqualTo(BaseUserInterface $user)
     {
-        return (string) $this->getUsername();
+        if (!$user instanceof self) {
+            return false;
+        }
+
+        if ($this->password !== $user->getPassword()) {
+            return false;
+        }
+
+        if ($this->salt !== $user->getSalt()) {
+            return false;
+        }
+
+        if ($this->username !== $user->getUsername()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -14,8 +14,9 @@ namespace FOS\UserBundle\Tests\Util;
 use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Tests\TestUser;
 use FOS\UserBundle\Util\UserManipulator;
+use PHPUnit\Framework\TestCase;
 
-class UserManipulatorTest extends \PHPUnit_Framework_TestCase
+class UserManipulatorTest extends TestCase
 {
     public function testCreate()
     {
@@ -78,7 +79,7 @@ class UserManipulatorTest extends \PHPUnit_Framework_TestCase
         $manipulator->activate($username);
 
         $this->assertSame($username, $user->getUsername());
-        $this->assertSame(true, $user->isEnabled());
+        $this->assertTrue($user->isEnabled());
     }
 
     /**
@@ -132,7 +133,7 @@ class UserManipulatorTest extends \PHPUnit_Framework_TestCase
         $manipulator->deactivate($username);
 
         $this->assertSame($username, $user->getUsername());
-        $this->assertSame(false, $user->isEnabled());
+        $this->assertFalse($user->isEnabled());
     }
 
     /**
@@ -186,7 +187,7 @@ class UserManipulatorTest extends \PHPUnit_Framework_TestCase
         $manipulator->promote($username);
 
         $this->assertSame($username, $user->getUsername());
-        $this->assertSame(true, $user->isSuperAdmin());
+        $this->assertTrue($user->isSuperAdmin());
     }
 
     /**
@@ -240,7 +241,7 @@ class UserManipulatorTest extends \PHPUnit_Framework_TestCase
         $manipulator->demote($username);
 
         $this->assertSame($username, $user->getUsername());
-        $this->assertSame(false, $user->isSuperAdmin());
+        $this->assertFalse($user->isSuperAdmin());
     }
 
     /**
@@ -324,6 +325,51 @@ class UserManipulatorTest extends \PHPUnit_Framework_TestCase
 
         $manipulator = new UserManipulator($userManagerMock, $eventDispatcherMock, $requestStackMock);
         $manipulator->changePassword($invalidusername, $password);
+    }
+
+    public function testAddRole()
+    {
+        $userManagerMock = $this->getMockBuilder('FOS\UserBundle\Model\UserManagerInterface')->getMock();
+        $username = 'test_username';
+        $userRole = 'test_role';
+        $user = new TestUser();
+
+        $userManagerMock->expects($this->exactly(2))
+            ->method('findUserByUsername')
+            ->will($this->returnValue($user))
+            ->with($this->equalTo($username));
+
+        $eventDispatcherMock = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
+        $requestStackMock = $this->getRequestStackMock(false);
+
+        $manipulator = new UserManipulator($userManagerMock, $eventDispatcherMock, $requestStackMock);
+
+        $this->assertTrue($manipulator->addRole($username, $userRole));
+        $this->assertFalse($manipulator->addRole($username, $userRole));
+        $this->assertTrue($user->hasRole($userRole));
+    }
+
+    public function testRemoveRole()
+    {
+        $userManagerMock = $this->getMockBuilder('FOS\UserBundle\Model\UserManagerInterface')->getMock();
+        $username = 'test_username';
+        $userRole = 'test_role';
+        $user = new TestUser();
+        $user->addRole($userRole);
+
+        $userManagerMock->expects($this->exactly(2))
+            ->method('findUserByUsername')
+            ->will($this->returnValue($user))
+            ->with($this->equalTo($username));
+
+        $eventDispatcherMock = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
+        $requestStackMock = $this->getRequestStackMock(false);
+
+        $manipulator = new UserManipulator($userManagerMock, $eventDispatcherMock, $requestStackMock);
+
+        $this->assertTrue($manipulator->removeRole($username, $userRole));
+        $this->assertFalse($user->hasRole($userRole));
+        $this->assertFalse($manipulator->removeRole($username, $userRole));
     }
 
     /**

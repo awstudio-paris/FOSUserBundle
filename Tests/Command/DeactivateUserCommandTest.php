@@ -12,15 +12,16 @@
 namespace FOS\UserBundle\Tests\Command;
 
 use FOS\UserBundle\Command\DeactivateUserCommand;
+use FOS\UserBundle\Util\UserManipulator;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DeactivateUserCommandTest extends \PHPUnit_Framework_TestCase
+class DeactivateUserCommandTest extends TestCase
 {
     public function testExecute()
     {
-        $commandTester = $this->createCommandTester($this->getContainer('user'));
+        $commandTester = $this->createCommandTester($this->getManipulator('user'));
         $exitCode = $commandTester->execute(array(
             'username' => 'user',
         ), array(
@@ -46,7 +47,7 @@ class DeactivateUserCommandTest extends \PHPUnit_Framework_TestCase
 
         $application->getHelperSet()->set($helper, 'question');
 
-        $commandTester = $this->createCommandTester($this->getContainer('user'), $application);
+        $commandTester = $this->createCommandTester($this->getManipulator('user'), $application);
         $exitCode = $commandTester->execute(array(), array(
             'decorated' => false,
             'interactive' => true,
@@ -57,12 +58,12 @@ class DeactivateUserCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param ContainerInterface $container
-     * @param Application|null   $application
+     * @param UserManipulator  $manipulator
+     * @param Application|null $application
      *
      * @return CommandTester
      */
-    private function createCommandTester(ContainerInterface $container, Application $application = null)
+    private function createCommandTester(UserManipulator $manipulator, Application $application = null)
     {
         if (null === $application) {
             $application = new Application();
@@ -70,8 +71,7 @@ class DeactivateUserCommandTest extends \PHPUnit_Framework_TestCase
 
         $application->setAutoExit(false);
 
-        $command = new DeactivateUserCommand();
-        $command->setContainer($container);
+        $command = new DeactivateUserCommand($manipulator);
 
         $application->add($command);
 
@@ -83,10 +83,8 @@ class DeactivateUserCommandTest extends \PHPUnit_Framework_TestCase
      *
      * @return mixed
      */
-    private function getContainer($username)
+    private function getManipulator($username)
     {
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->getMock();
-
         $manipulator = $this->getMockBuilder('FOS\UserBundle\Util\UserManipulator')
             ->disableOriginalConstructor()
             ->getMock();
@@ -97,12 +95,6 @@ class DeactivateUserCommandTest extends \PHPUnit_Framework_TestCase
             ->with($username)
         ;
 
-        $container
-            ->expects($this->once())
-            ->method('get')
-            ->with('fos_user.util.user_manipulator')
-            ->will($this->returnValue($manipulator));
-
-        return $container;
+        return $manipulator;
     }
 }
