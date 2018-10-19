@@ -1,9 +1,9 @@
-{% extends "@FOSUser/layout.html.twig" %}
+{% extends "@AWCms/login_layout.html.twig" %}
+{% trans_default_domain 'messages' %}
 
-{% trans_default_domain 'FOSUserBundle' %}
 
 {% block fos_user_content %}
-<p>
-{{ 'resetting.check_email'|trans({'%tokenLifetime%': tokenLifetime})|nl2br }}
-</p>
+    <p>
+        {{ 'user.resetting.check_email'|trans({'%email%': email}) }}
+    </p>
 {% endblock %}

@@ -41,7 +41,7 @@ class ResettingController extends Controller
     private $mailer;
 
     /**
-     * @var int
+     * @var \DateInterval
      */
     private $retryTtl;
 
@@ -90,8 +90,9 @@ class ResettingController extends Controller
         if (null !== $event->getResponse()) {
             return $event->getResponse();
         }
-
-        if (null !== $user && !$user->isPasswordRequestNonExpired($this->retryTtl)) {
+        
+        $retryTtl = is_numeric($this->retryTtl) ? new \DateInterval('PT'.$this->retryTtl.'S') : $this->retryTtl;
+        if (null !== $user && !$user->isPasswordRequestNonExpired($retryTtl)) {
             $event = new GetResponseUserEvent($user, $request);
             $this->eventDispatcher->dispatch(FOSUserEvents::RESETTING_RESET_REQUEST, $event);
 
@@ -142,6 +143,7 @@ class ResettingController extends Controller
 
         return $this->render('@FOSUser/Resetting/check_email.html.twig', array(
             'tokenLifetime' => ceil($this->retryTtl / 3600),
+            'email' => $username
         ));
     }
 
